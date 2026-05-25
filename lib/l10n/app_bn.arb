@@ -1,0 +1,13 @@
+{
+  "appTitle": "ক্যাম্পাসকানেক্ট",
+  "loginWelcome": "স্বাগতম",
+  "loginSubtitle": "আপনার অ্যাকাউন্টে লগইন করুন",
+  "emailHint": "ইমেইল অ্যাড্রেস লিখুন",
+  "passwordHint": "পাসওয়ার্ড দিন",
+  "forgotPassword": "পাসওয়ার্ড ভুলে গেছেন?",
+  "loginButton": "লগইন",
+  "dontHaveAccount": "অ্যাকাউন্ট নেই?",
+  "registerNow": " এখনই নিবন্ধন করুন",
+  "emailOrStudentId": "ইমেইল বা স্টুডেন্ট আইডি",
+  "password": "পাসওয়ার্ড"
+}

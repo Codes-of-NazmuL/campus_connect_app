@@ -1,0 +1,16 @@
+{
+  "appTitle": "CampusConnect",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  "loginWelcome": "Welcome back",
+  "loginSubtitle": "Login to your account",
+  "emailHint": "Enter email address",
+  "passwordHint": "Enter your password",
+  "forgotPassword": "Forgot Password?",
+  "loginButton": "Login",
+  "dontHaveAccount": "Don't have an account?",
+  "registerNow": " Register now",
+  "emailOrStudentId": "Email or Student ID",
+  "password": "Password"
+}
