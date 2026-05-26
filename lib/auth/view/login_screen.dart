@@ -8,6 +8,7 @@ import 'package:campus_connect_app/core/theme/colors.dart';
 import 'package:campus_connect_app/core/theme/typography.dart';
 import 'package:campus_connect_app/core/providers/locale_provider.dart';
 import 'package:campus_connect_app/core/network/auth_repository.dart';
+import 'package:campus_connect_app/core/network/push_notification_service.dart';
 import 'package:campus_connect_app/shared/widgets/buttons.dart';
 import 'package:campus_connect_app/shared/widgets/inputs.dart';
 import 'package:campus_connect_app/core/utils/toast_service.dart';
@@ -50,6 +51,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
       // Fetch profile to know role
       final profile = await authRepo.getProfile();
+      
+      // Sync FCM token
+      PushNotificationService.instance.syncTokenWithBackend();
 
       if (mounted) {
         if (profile['role'] == 'TEACHER') {
@@ -270,8 +274,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 onPressed: _handleLogin,
                               ),
                         const SizedBox(height: 24),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                        Wrap(
+                          alignment: WrapAlignment.center,
+                          crossAxisAlignment: WrapCrossAlignment.center,
                           children: [
                             Text(
                               loc.dontHaveAccount,

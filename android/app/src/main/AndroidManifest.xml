@@ -1,4 +1,22 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Required for push notifications on Android 13+ -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <!-- Required for CallKit-style full-screen incoming call UI -->
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+
     <application
         android:label="campus_connect_app"
         android:name="${applicationName}"

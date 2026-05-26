@@ -88,42 +88,46 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   final data = _onboardingData[index];
                   return Padding(
                     padding: const EdgeInsets.all(40.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          width: double.infinity,
-                          height: 240,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(24),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.1),
-                                blurRadius: 20,
-                                offset: const Offset(0, 10),
+                    child: Center(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              width: double.infinity,
+                              height: 240,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(24),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.1),
+                                    blurRadius: 20,
+                                    offset: const Offset(0, 10),
+                                  ),
+                                ],
+                                image: DecorationImage(
+                                  image: AssetImage(data['image']!),
+                                  fit: BoxFit.cover,
+                                ),
                               ),
-                            ],
-                            image: DecorationImage(
-                              image: AssetImage(data['image']!),
-                              fit: BoxFit.cover,
                             ),
-                          ),
+                            const SizedBox(height: 48),
+                            Text(
+                              data['title']!,
+                              style: AppTypography.textTheme.headlineLarge,
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              data['description']!,
+                              style: AppTypography.textTheme.bodyLarge?.copyWith(
+                                color: AppColors.neutral500,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 48),
-                        Text(
-                          data['title']!,
-                          style: AppTypography.textTheme.headlineLarge,
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          data['description']!,
-                          style: AppTypography.textTheme.bodyLarge?.copyWith(
-                            color: AppColors.neutral500,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
+                      ),
                     ),
                   );
                 },

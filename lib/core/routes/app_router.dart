@@ -11,14 +11,19 @@ import '../../student/view/student_main_container.dart';
 import '../../teacher/view/teacher_main_container.dart';
 import '../../chat/view/chat_detail_screen.dart';
 import '../../chat/view/new_chat_screen.dart';
+import '../../chat/view/call_screen.dart';
 import '../../student/view/exam_seat_detail_screen.dart';
 import '../../shared/screens/coming_soon_screen.dart';
 import '../../shared/screens/schedule_screen.dart';
 import '../../teacher/view/create_announcement_screen.dart';
 import 'dart:convert';
+import 'package:flutter/material.dart';
+
+final rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
+    navigatorKey: rootNavigatorKey,
     initialLocation: '/',
     routes: [
       GoRoute(path: '/', builder: (context, state) => const SplashScreen()),
@@ -53,6 +58,18 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/chat/new',
         builder: (context, state) => const NewChatScreen(),
+      ),
+      GoRoute(
+        path: '/call',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>? ?? {};
+          return CallScreen(
+            isIncoming: extra['isIncoming'] ?? true,
+            remoteUserId: extra['remoteUserId'] ?? '',
+            callerName: extra['callerName'] ?? 'Unknown',
+            offerData: extra['offerData'],
+          );
+        },
       ),
       GoRoute(
         path: '/chat/:id',

@@ -4,6 +4,9 @@ import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:campus_connect_app/core/theme/colors.dart';
 import 'package:campus_connect_app/core/theme/typography.dart';
 import 'package:campus_connect_app/core/network/chat_repository.dart';
+import 'package:campus_connect_app/core/network/webrtc_service.dart';
+import 'package:go_router/go_router.dart';
+import 'package:campus_connect_app/core/network/callkit_service.dart';
 import 'student_home_screen.dart';
 import 'student_academic_screen.dart';
 import 'student_chats_screen.dart';
@@ -20,6 +23,10 @@ class StudentMainContainer extends ConsumerStatefulWidget {
 class _StudentMainContainerState extends ConsumerState<StudentMainContainer> {
   int _currentIndex = 0;
 
+  /// True when the app launched from an accepted call notification.
+  /// Hides the dashboard behind a black overlay while the call screen is prepared.
+  bool _navigatingToCall = startupPendingCall != null;
+
   final List<Widget> _screens = [
     const StudentHomeScreen(),
     const StudentAcademicScreen(),
@@ -33,12 +40,50 @@ class _StudentMainContainerState extends ConsumerState<StudentMainContainer> {
     super.initState();
     // Connect global socket for live chatting
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(chatRepositoryProvider).connectSocket();
+      final chatRepo = ref.read(chatRepositoryProvider);
+      chatRepo.connectSocket().then((_) {
+        final webrtcService = ref.read(webrtcServiceProvider);
+        webrtcService.initializeSignaling();
+
+        // ── Check if we launched from an accepted CallKit notification ──
+        // consumePendingCall() reads from SharedPreferences which survives
+        // across Dart isolate boundaries (background FCM isolate → main isolate).
+        CallKitService.instance.consumePendingCall().then((pendingCall) {
+          startupPendingCall = null; // clear global
+          if (pendingCall != null && mounted) {
+            context.push(
+              '/call',
+              extra: {
+                'isIncoming': true,
+                'remoteUserId': pendingCall['from'],
+                'callerName': pendingCall['name'] ?? 'Unknown',
+                'offerData': pendingCall['signal'],
+              },
+            );
+            webrtcService.answerCall(pendingCall['from'], pendingCall['signal']);
+          }
+          // Hide overlay regardless of whether a call was found
+          if (mounted) setState(() => _navigatingToCall = false);
+        });
+      });
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        _buildScaffold(),
+        // ── Black overlay hides dashboard flash when launching from a call ──
+        if (_navigatingToCall)
+          const Positioned.fill(
+            child: Material(color: Colors.black),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildScaffold() {
     return Scaffold(
       backgroundColor: AppColors.neutral50,
       body: _screens[_currentIndex],

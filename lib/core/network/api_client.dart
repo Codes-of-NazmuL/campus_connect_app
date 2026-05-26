@@ -11,11 +11,8 @@ class ApiClient {
   late final Dio _dio;
 
   ApiClient() {
-    // Determine Base URL depending on platform
-    String baseUrl = 'http://127.0.0.1:3000/api';
-    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
-      baseUrl = 'http://10.0.2.2:3000/api';
-    }
+    // Use the Mac Hotspot IP so physical devices can reach the backend
+    String baseUrl = 'http://192.168.2.1:3000/api';
 
     _dio = Dio(
       BaseOptions(

@@ -10,6 +10,8 @@ import 'package:campus_connect_app/core/providers/user_provider.dart';
 import 'package:campus_connect_app/core/utils/date_formatter.dart';
 import 'package:intl/intl.dart';
 import 'package:campus_connect_app/core/utils/toast_service.dart';
+import 'package:campus_connect_app/core/network/webrtc_service.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class ChatDetailScreen extends ConsumerStatefulWidget {
   final String roomId;
@@ -62,6 +64,7 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
 
       // 2. Connect socket and join room
       await _chatRepo.connectSocket();
+      ref.read(webrtcServiceProvider).initializeSignaling();
       _chatRepo.joinRoom(widget.roomId);
 
       // 3. Listen to incoming real-time messages
@@ -101,6 +104,16 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
 
     _chatRepo.sendMessage(widget.roomId, text);
     _messageController.clear();
+  }
+
+  String? _getRemoteUserId() {
+    final myId = ref.read(userProvider).value?['id'];
+    for (var msg in _messages) {
+      if (msg['senderId'] != myId) {
+        return msg['senderId'];
+      }
+    }
+    return null;
   }
 
   @override
@@ -249,6 +262,42 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
         child: Container(color: AppColors.neutral200, height: 1),
       ),
       actions: [
+        if (!widget.isGroup)
+          IconButton(
+            icon: const Icon(FluentIcons.video_24_regular, color: AppColors.neutral900),
+            onPressed: () async {
+              final remoteId = _getRemoteUserId();
+              if (remoteId == null) {
+                ToastService.showError(context: context, message: 'Wait for a message to load first.');
+                return;
+              }
+
+              // Explicitly request permissions
+              final cameraStatus = await Permission.camera.request();
+              final micStatus = await Permission.microphone.request();
+
+              if (cameraStatus != PermissionStatus.granted || micStatus != PermissionStatus.granted) {
+                if (context.mounted) {
+                  ToastService.showError(context: context, message: 'Camera and Microphone permissions are required!');
+                }
+                return;
+              }
+
+              final user = ref.read(userProvider).value;
+              final webrtcService = ref.read(webrtcServiceProvider);
+              
+              if (!context.mounted) return;
+              context.push(
+                '/call',
+                extra: {
+                  'isIncoming': false,
+                  'remoteUserId': remoteId,
+                  'callerName': widget.chatName,
+                },
+              );
+              await webrtcService.startCall(remoteId, user?['name'] ?? 'User', user?['id'] ?? '');
+            },
+          ),
         PopupMenuButton<String>(
           icon: const Icon(FluentIcons.more_vertical_24_regular, color: AppColors.neutral900),
           onSelected: (value) async {

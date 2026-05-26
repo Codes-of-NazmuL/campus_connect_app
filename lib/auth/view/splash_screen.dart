@@ -1,3 +1,4 @@
+// ignore_for_file: use_build_context_synchronously
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:campus_connect_app/core/theme/colors.dart';
@@ -7,6 +8,7 @@ import 'package:lottie/lottie.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:campus_connect_app/core/network/auth_repository.dart';
+import 'package:campus_connect_app/core/network/callkit_service.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -23,7 +25,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   }
 
   Future<void> _navigateToNext() async {
-    await Future.delayed(const Duration(seconds: 1)); // Show splash briefly
+    // Skip the 1-second animation when the user accepted a call —
+    // every millisecond counts when a real-time call is waiting.
+    if (startupPendingCall == null) {
+      await Future.delayed(const Duration(seconds: 1));
+    }
 
     if (!mounted) return;
 
@@ -43,6 +49,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         } else {
           context.go('/student/home');
         }
+
         return;
       }
     } catch (e) {

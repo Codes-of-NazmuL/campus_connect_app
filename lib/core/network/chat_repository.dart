@@ -18,6 +18,7 @@ class ChatRepository {
   ChatRepository(this._apiClient);
 
   Stream<Map<String, dynamic>> get messageStream => _messageController.stream;
+  io.Socket? get socket => _socket;
 
   Future<void> connectSocket() async {
     if (_socket != null && _socket!.connected) return;
